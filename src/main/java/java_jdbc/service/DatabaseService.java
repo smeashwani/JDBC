@@ -1,5 +1,10 @@
 package java_jdbc.service;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -159,4 +164,37 @@ public class DatabaseService {
 		}
 		
 	}
+	
+	
+	public void saveImage() {
+		try {
+			//CREATE TABLE  IMGTABLE(NAME TEXT,PHOTO BLOB)
+			PreparedStatement ps=con.prepareStatement("insert into imgtable values(?,?)");
+			ps.setString(1,"JAVA");
+			ps.setBinaryStream(2, new FileInputStream("jdbcImage.jpeg"));
+			ps.executeUpdate();
+			System.out.println("Successfully save image");
+		} catch (SQLException | FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void getImage() {
+		try {
+			//CREATE TABLE  IMGTABLE(NAME TEXT,PHOTO BLOB)
+			PreparedStatement ps=con.prepareStatement("select * from imgtable");
+			ResultSet rs=ps.executeQuery();  
+			if(rs.next()){//now on 1st row  
+				Blob b=rs.getBlob(2);//2 means 2nd column data  
+				byte barr[]=b.getBytes(1,(int)b.length());//1 means first image  
+				FileOutputStream fout=new FileOutputStream("outputImage.jpg");  
+				fout.write(barr);
+			}
+			System.out.println("Successfully save image");
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

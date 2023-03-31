@@ -1,7 +1,5 @@
 package java_jdbc.controller;
 
-import java.util.Scanner;
-
 import java_jdbc.service.DatabaseService;
 
 public class Runner {
@@ -20,6 +18,7 @@ public class Runner {
 //		database.list();
 		database.getDatabaseInfo();
 		//database.update();
-		
+		database.saveImage();
+		database.getImage();
 	}
 }
