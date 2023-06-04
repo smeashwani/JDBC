@@ -86,7 +86,7 @@ public class DatabaseService {
 	public void list(String name) {
 		// --22' OR name !='1
 		try (Statement stmt = con.createStatement()) {
-			String sql = "select * from employees where name =?";
+			String sql = "select * from employees where name='"+name+"'";
 			System.out.println(sql);
 			ResultSet executeQuery = stmt.executeQuery(sql);
 			while (executeQuery.next()) {
@@ -140,55 +140,54 @@ public class DatabaseService {
 				if (i % 1_000 == 0) {
 					ps.executeBatch();
 					con.commit();
-				}else {
+				} else {
 					con.setAutoCommit(false);
 				}
 			}
-		}  catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			System.out.println("Time Taken=" + (System.currentTimeMillis() - start));
 		}
 	}
-	
+
 	public void getDatabaseInfo() {
 		try {
 			DatabaseMetaData dbmd = con.getMetaData();
 			ResultSet tablesResultSet = dbmd.getTables(null, null, "%", null);
 			while (tablesResultSet.next()) {
-			  System.out.println(tablesResultSet.getString("TABLE_NAME"));
+				System.out.println(tablesResultSet.getString("TABLE_NAME"));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	
+
 	public void saveImage() {
 		try {
-			//CREATE TABLE  IMGTABLE(NAME TEXT,PHOTO BLOB)
-			PreparedStatement ps=con.prepareStatement("insert into imgtable values(?,?)");
-			ps.setString(1,"JAVA");
+			// CREATE TABLE IMGTABLE(NAME TEXT,PHOTO BLOB)
+			PreparedStatement ps = con.prepareStatement("insert into imgtable values(?,?)");
+			ps.setString(1, "JAVA");
 			ps.setBinaryStream(2, new FileInputStream("jdbcImage.jpeg"));
 			ps.executeUpdate();
 			System.out.println("Successfully save image");
 		} catch (SQLException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public void getImage() {
 		try {
-			//CREATE TABLE  IMGTABLE(NAME TEXT,PHOTO BLOB)
-			PreparedStatement ps=con.prepareStatement("select * from imgtable");
-			ResultSet rs=ps.executeQuery();  
-			if(rs.next()){//now on 1st row  
-				Blob b=rs.getBlob(2);//2 means 2nd column data  
-				byte barr[]=b.getBytes(1,(int)b.length());//1 means first image  
-				FileOutputStream fout=new FileOutputStream("outputImage.jpg");  
+			// CREATE TABLE IMGTABLE(NAME TEXT,PHOTO BLOB)
+			PreparedStatement ps = con.prepareStatement("select * from imgtable");
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {// now on 1st row
+				Blob b = rs.getBlob(2);// 2 means 2nd column data
+				byte barr[] = b.getBytes(1, (int) b.length());// 1 means first image
+				FileOutputStream fout = new FileOutputStream("outputImage.jpg");
 				fout.write(barr);
 			}
 			System.out.println("Successfully save image");
@@ -196,5 +195,5 @@ public class DatabaseService {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
